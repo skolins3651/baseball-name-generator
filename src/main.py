@@ -58,10 +58,23 @@ def main():
 
     args = parser.parse_args()
 
+    if args.mode == "specific" and not args.profile:
+        parser.error("--profile is required when --mode is 'specific'")
+
+    if args.count <= 0:
+        parser.error("--count must be a positive integer")
+
     profiles = load_profiles(DATA_PATH)
 
     if args.mix is not None:
         custom_weights = parse_mix(args.mix)
+
+        valid_names = {p["name"] for p in profiles}
+
+        for name in custom_weights:
+            if name not in valid_names:
+                parser.error(f"Unknown profile in mix: {name!r}")
+
         profiles = make_custom_mix(profiles, custom_weights)
 
     result = generate_batch(
