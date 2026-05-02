@@ -93,31 +93,98 @@ def make_custom_mix(profiles, weights_by_name):
 
     return custom_profiles
 
+def validate_name_entry(entry, profile_name, list_name):
+    if not isinstance(entry, dict):
+        raise ValueError(f"Invalid entry in {profile_name} / {list_name}: entry must be a dictionary.")
+
+    if "name" not in entry:
+        raise ValueError(f"Invalid entry in {profile_name} / {list_name}: missing 'name'.")
+
+    if "weight" not in entry:
+        raise ValueError(f"Invalid entry {entry.get('name')!r} in {profile_name} / {list_name}: missing 'weight'.")
+
+    if not isinstance(entry["name"], str):
+        raise ValueError(f"Invalid entry in {profile_name} / {list_name}: name must be a string.")
+
+    if entry["name"].strip() == "":
+        raise ValueError(f"Invalid entry in {profile_name} / {list_name}: name cannot be blank.")
+
+    if not isinstance(entry["weight"], (int, float)):
+        raise ValueError(f"Invalid entry {entry['name']!r} in {profile_name} / {list_name}: weight must be a number.")
+
+    if entry["weight"] <= 0:
+        raise ValueError(f"Invalid entry {entry['name']!r} in {profile_name} / {list_name}: weight must be positive.")
+
+def validate_name_list(entries, profile_name, list_name):
+    if not isinstance(entries, list):
+        raise ValueError(f"{profile_name} / {list_name} must be a list.")
+
+    if len(entries) == 0:
+        raise ValueError(f"{profile_name} / {list_name} cannot be empty.")
+
+    seen_names = set()
+
+    for entry in entries:
+        validate_name_entry(entry, profile_name, list_name)
+
+        normalized_name = entry["name"].strip().lower()
+
+        if normalized_name in seen_names:
+            raise ValueError(f"Duplicate name {entry['name']!r} found in {profile_name} / {list_name}.")
+
+        seen_names.add(normalized_name)
+
 def validate_profiles(profiles):
     if not isinstance(profiles, list):
         raise ValueError("Profiles must be a list.")
 
+    if len(profiles) == 0:
+        raise ValueError("Profiles cannot be empty.")
+
+    seen_profile_names = set()
+
     for profile in profiles:
+        if not isinstance(profile, dict):
+            raise ValueError("Each profile must be a dictionary.")
+
         if "name" not in profile:
             raise ValueError("Profile missing 'name'.")
 
+        if not isinstance(profile["name"], str):
+            raise ValueError("Profile name must be a string.")
+
+        if profile["name"].strip() == "":
+            raise ValueError("Profile name cannot be blank.")
+
+        normalized_profile_name = profile["name"].strip().lower()
+
+        if normalized_profile_name in seen_profile_names:
+            raise ValueError(f"Duplicate profile name {profile['name']!r}.")
+
+        seen_profile_names.add(normalized_profile_name)
+
         if "weight" not in profile:
-            raise ValueError(f"Profile {profile.get('name')} missing 'weight'.")
+            raise ValueError(f"Profile {profile['name']!r} missing 'weight'.")
+
+        if not isinstance(profile["weight"], (int, float)):
+            raise ValueError(f"Profile {profile['name']!r} weight must be a number.")
+
+        if profile["weight"] <= 0:
+            raise ValueError(f"Profile {profile['name']!r} weight must be positive.")
 
         if "data" not in profile:
-            raise ValueError(f"Profile {profile.get('name')} missing 'data'.")
+            raise ValueError(f"Profile {profile['name']!r} missing 'data'.")
+
+        if not isinstance(profile["data"], dict):
+            raise ValueError(f"Profile {profile['name']!r} data must be a dictionary.")
 
         data = profile["data"]
 
-        if "first_names" not in data or "last_names" not in data:
-            raise ValueError(f"Profile {profile['name']} missing name lists.")
+        if "first_names" not in data:
+            raise ValueError(f"Profile {profile['name']!r} missing 'first_names'.")
 
-        if not data["first_names"]:
-            raise ValueError(f"Profile {profile['name']} has no first names.")
+        if "last_names" not in data:
+            raise ValueError(f"Profile {profile['name']!r} missing 'last_names'.")
 
-        if not data["last_names"]:
-            raise ValueError(f"Profile {profile['name']} has no last names.")
-
-        for entry in data["first_names"] + data["last_names"]:
-            if "name" not in entry or "weight" not in entry:
-                raise ValueError(f"Invalid name entry in profile {profile['name']}.")
+        validate_name_list(data["first_names"], profile["name"], "first_names")
+        validate_name_list(data["last_names"], profile["name"], "last_names")
