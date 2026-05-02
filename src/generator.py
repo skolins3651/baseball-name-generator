@@ -31,14 +31,8 @@ def get_profile_by_name(profiles, profile_name):
 
 
 def pick_profile(profiles):
-    names = [p["name"] for p in profiles]
-    weights = [p["weight"] for p in profiles]
-
-    chosen_name = random.choices(names, weights=weights, k=1)[0]
-
-    for p in profiles:
-        if p["name"] == chosen_name:
-            return p
+    weights = [profile["weight"] for profile in profiles]
+    return random.choices(profiles, weights=weights, k=1)[0]
 
 
 def generate_multiple_from_profiles(profiles, n):
@@ -93,6 +87,7 @@ def make_custom_mix(profiles, weights_by_name):
 
     return custom_profiles
 
+
 def validate_name_entry(entry, profile_name, list_name):
     if not isinstance(entry, dict):
         raise ValueError(f"Invalid entry in {profile_name} / {list_name}: entry must be a dictionary.")
@@ -115,6 +110,7 @@ def validate_name_entry(entry, profile_name, list_name):
     if entry["weight"] <= 0:
         raise ValueError(f"Invalid entry {entry['name']!r} in {profile_name} / {list_name}: weight must be positive.")
 
+
 def validate_name_list(entries, profile_name, list_name):
     if not isinstance(entries, list):
         raise ValueError(f"{profile_name} / {list_name} must be a list.")
@@ -133,6 +129,7 @@ def validate_name_list(entries, profile_name, list_name):
             raise ValueError(f"Duplicate name {entry['name']!r} found in {profile_name} / {list_name}.")
 
         seen_names.add(normalized_name)
+
 
 def validate_profiles(profiles):
     if not isinstance(profiles, list):
