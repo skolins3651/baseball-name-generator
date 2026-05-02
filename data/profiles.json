@@ -1,0 +1,70 @@
+[
+    {
+        "name": "American",
+        "weight": 70,
+        "data": {
+            "first_names": [
+                {
+                    "name": "David",
+                    "weight": 10
+                },
+                {
+                    "name": "John",
+                    "weight": 6
+                },
+                {
+                    "name": "Anthony",
+                    "weight": 5
+                }
+            ],
+            "last_names": [
+                {
+                    "name": "Ross",
+                    "weight": 5
+                },
+                {
+                    "name": "Sullivan",
+                    "weight": 3
+                },
+                {
+                    "name": "Parker",
+                    "weight": 4
+                }
+            ]
+        }
+    },
+    {
+        "name": "Dominican",
+        "weight": 30,
+        "data": {
+            "first_names": [
+                {
+                    "name": "José",
+                    "weight": 9
+                },
+                {
+                    "name": "Miguel",
+                    "weight": 7
+                },
+                {
+                    "name": "Juan",
+                    "weight": 6
+                }
+            ],
+            "last_names": [
+                {
+                    "name": "Martinez",
+                    "weight": 8
+                },
+                {
+                    "name": "Rodríguez",
+                    "weight": 7
+                },
+                {
+                    "name": "Soto",
+                    "weight": 5
+                }
+            ]
+        }
+    }
+]
