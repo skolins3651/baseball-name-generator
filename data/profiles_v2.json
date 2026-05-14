@@ -1,0 +1,107 @@
+{
+  "name_lists": {
+    "american_first": {
+      "type": "first_name",
+      "entries": [
+        {"name": "David", "weight": 10},
+        {"name": "John", "weight": 6},
+        {"name": "Michael", "weight": 8},
+        {"name": "Chris", "weight": 7},
+        {"name": "Anthony", "weight": 5},
+        {"name": "James", "weight": 9},
+        {"name": "Robert", "weight": 8},
+        {"name": "Daniel", "weight": 6},
+        {"name": "Matthew", "weight": 7},
+        {"name": "Joseph", "weight": 5},
+        {"name": "Andrew", "weight": 4},
+        {"name": "Justin", "weight": 3},
+        {"name": "Ryan", "weight": 2},
+        {"name": "Brandon", "weight": 1}
+      ]
+    },
+    "american_last": {
+      "type": "last_name",
+      "entries": [
+        {"name": "Ross", "weight": 5},
+        {"name": "Parker", "weight": 4},
+        {"name": "Smith", "weight": 10},
+        {"name": "Johnson", "weight": 9},
+        {"name": "Williams", "weight": 8},
+        {"name": "Brown", "weight": 7},
+        {"name": "Jones", "weight": 6},
+        {"name": "Garcia", "weight": 5},
+        {"name": "Miller", "weight": 4},
+        {"name": "Davis", "weight": 3},
+        {"name": "Sullivan", "weight": 2},
+        {"name": "Wilson", "weight": 2},
+        {"name": "Moore", "weight": 1},
+        {"name": "Taylor", "weight": 4}
+      ]
+    },
+    "dominican_first": {
+      "type": "first_name",
+      "entries": [
+        {"name": "José", "weight": 9},
+        {"name": "Miguel", "weight": 7},
+        {"name": "Juan", "weight": 8},
+        {"name": "Carlos", "weight": 6},
+        {"name": "Luis", "weight": 5},
+        {"name": "Pedro", "weight": 4},
+        {"name": "Antonio", "weight": 3},
+        {"name": "Manuel", "weight": 2},
+        {"name": "Francisco", "weight": 1},
+        {"name": "Jorge", "weight": 7},
+        {"name": "Rafael", "weight": 4},
+        {"name": "Santiago", "weight": 3},
+        {"name": "Andrés", "weight": 5},
+        {"name": "Eduardo", "weight": 4}
+      ]
+    },
+    "dominican_last": {
+      "type": "last_name",
+      "entries": [
+        {"name": "Martinez", "weight": 8},
+        {"name": "Rodríguez", "weight": 7},
+        {"name": "González", "weight": 6},
+        {"name": "Soto", "weight": 5},
+        {"name": "Hernández", "weight": 5},
+        {"name": "López", "weight": 5},
+        {"name": "Pérez", "weight": 5},
+        {"name": "Sánchez", "weight": 4},
+        {"name": "Ramírez", "weight": 3},
+        {"name": "Flores", "weight": 2},
+        {"name": "Rivera", "weight": 1},
+        {"name": "Gómez", "weight": 4},
+        {"name": "Díaz", "weight": 3},
+        {"name": "Cruz", "weight": 2},
+        {"name": "Morales", "weight": 1}
+      ]
+    }
+  },
+  "profiles": [
+    {
+      "name": "American",
+      "weight": 70,
+      "data": {
+        "first_name_lists": [
+          {"list": "american_first", "weight": 100}
+        ],
+        "last_name_lists": [
+          {"list": "american_last", "weight": 100}
+        ]
+      }
+    },
+    {
+      "name": "Dominican",
+      "weight": 30,
+      "data": {
+        "first_name_lists": [
+          {"list": "dominican_first", "weight": 100}
+        ],
+        "last_name_lists": [
+          {"list": "dominican_last", "weight": 100}
+        ]
+      }
+    }
+  ]
+}
