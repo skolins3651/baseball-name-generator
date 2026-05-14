@@ -185,3 +185,72 @@ def validate_profiles(profiles):
 
         validate_name_list(data["first_names"], profile["name"], "first_names")
         validate_name_list(data["last_names"], profile["name"], "last_names")
+
+
+# helper files for v2 JSON schema begin here
+def load_database(filename):
+    with open(filename, "r", encoding="utf-8") as file:
+        database = json.load(file)
+
+    return database
+
+
+def pick_name_list(database, list_refs):
+    weights = [item["weight"] for item in list_refs]
+    chosen_ref = random.choices(list_refs, weights=weights, k=1)[0]
+    list_name = chosen_ref["list"]
+
+    return database["name_lists"][list_name]
+
+
+def generate_name_v2(database, profile):
+    first_list = pick_name_list(database, profile["data"]["first_name_lists"])
+    last_list = pick_name_list(database, profile["data"]["last_name_lists"])
+
+    first = weighted_pick(first_list["entries"])
+    last = weighted_pick(last_list["entries"])
+
+    return f"{first} {last}"
+
+
+def pick_profile_v2(database):
+    profiles = database["profiles"]
+    weights = [profile["weight"] for profile in profiles]
+    return random.choices(profiles, weights=weights, k=1)[0]
+
+
+def get_profile_by_name_v2(database, profile_name):
+    for profile in database["profiles"]:
+        if profile["name"] == profile_name:
+            return profile
+
+    raise ValueError(f"No profile named {profile_name!r} was found.")
+
+
+def generate_batch_v2(database, n, mode="mixed", profile_name=None):
+    names = []
+
+    if mode == "mixed":
+        for _ in range(n):
+            profile = pick_profile_v2(database)
+            names.append(generate_name_v2(database, profile))
+
+    elif mode == "locked":
+        profile = pick_profile_v2(database)
+
+        for _ in range(n):
+            names.append(generate_name_v2(database, profile))
+
+    elif mode == "specific":
+        if profile_name is None:
+            raise ValueError("profile_name is required when mode='specific'.")
+
+        profile = get_profile_by_name_v2(database, profile_name)
+
+        for _ in range(n):
+            names.append(generate_name_v2(database, profile))
+
+    else:
+        raise ValueError("mode must be 'mixed', 'locked', or 'specific'.")
+
+    return "\n".join(names)
