@@ -192,6 +192,10 @@ def load_database(filename):
     with open(filename, "r", encoding="utf-8") as file:
         database = json.load(file)
 
+    validate_database(database)
+    validate_name_lists(database["name_lists"])
+    validate_profiles_v2(database)
+
     return database
 
 
@@ -254,3 +258,148 @@ def generate_batch_v2(database, n, mode="mixed", profile_name=None):
         raise ValueError("mode must be 'mixed', 'locked', or 'specific'.")
 
     return "\n".join(names)
+
+
+def validate_database(database):
+    if not isinstance(database, dict):
+        raise ValueError("Database must be a dictionary.")
+
+    if "name_lists" not in database:
+        raise ValueError("Database missing 'name_lists'.")
+
+    if "profiles" not in database:
+        raise ValueError("Database missing 'profiles'.")
+
+
+# note: this is not replacing the v1 validation scheme because it uses it    
+def validate_name_lists(name_lists):
+    if not isinstance(name_lists, dict):
+        raise ValueError("'name_lists' must be a dictionary.")
+
+    if len(name_lists) == 0:
+        raise ValueError("'name_lists' cannot be empty.")
+
+    for list_name, name_list in name_lists.items():
+
+        if not isinstance(name_list, dict):
+            raise ValueError(f"Name list {list_name!r} must be a dictionary.")
+
+        if "type" not in name_list:
+            raise ValueError(f"Name list {list_name!r} missing 'type'.")
+
+        if name_list["type"] not in ["first_name", "last_name"]:
+            raise ValueError(
+                f"Name list {list_name!r} has invalid type {name_list['type']!r}."
+            )
+
+        if "entries" not in name_list:
+            raise ValueError(f"Name list {list_name!r} missing 'entries'.")
+
+        validate_name_list(
+            name_list["entries"],
+            list_name,
+            "entries"
+        )
+
+
+def validate_list_refs(
+    database,
+    refs,
+    expected_type,
+    profile_name,
+    field_name
+):
+    if not isinstance(refs, list):
+        raise ValueError(
+            f"{profile_name} / {field_name} must be a list."
+        )
+
+    if len(refs) == 0:
+        raise ValueError(
+            f"{profile_name} / {field_name} cannot be empty."
+        )
+
+    for ref in refs:
+
+        if "list" not in ref:
+            raise ValueError(
+                f"{profile_name} / {field_name} missing 'list'."
+            )
+
+        if "weight" not in ref:
+            raise ValueError(
+                f"{profile_name} / {field_name} missing 'weight'."
+            )
+
+        list_name = ref["list"]
+
+        if list_name not in database["name_lists"]:
+            raise ValueError(
+                f"{profile_name} references unknown list {list_name!r}."
+            )
+
+        actual_type = database["name_lists"][list_name]["type"]
+
+        if actual_type != expected_type:
+            raise ValueError(
+                f"{profile_name} references {list_name!r} "
+                f"as {expected_type}, but it is actually {actual_type}."
+            )
+
+        if ref["weight"] <= 0:
+            raise ValueError(
+                f"{profile_name} has non-positive weight for list {list_name!r}."
+            )
+        
+
+def validate_profiles_v2(database):
+    profiles = database["profiles"]
+
+    if not isinstance(profiles, list):
+        raise ValueError("'profiles' must be a list.")
+
+    if len(profiles) == 0:
+        raise ValueError("'profiles' cannot be empty.")
+
+    seen_names = set()
+
+    for profile in profiles:
+
+        if "name" not in profile:
+            raise ValueError("Profile missing 'name'.")
+
+        name = profile["name"]
+
+        normalized_name = name.strip().lower()
+
+        if normalized_name in seen_names:
+            raise ValueError(f"Duplicate profile name {name!r}.")
+
+        seen_names.add(normalized_name)
+
+        if "weight" not in profile:
+            raise ValueError(f"Profile {name!r} missing 'weight'.")
+
+        if profile["weight"] <= 0:
+            raise ValueError(f"Profile {name!r} has non-positive weight.")
+
+        if "data" not in profile:
+            raise ValueError(f"Profile {name!r} missing 'data'.")
+
+        data = profile["data"]
+
+        validate_list_refs(
+            database,
+            data["first_name_lists"],
+            "first_name",
+            name,
+            "first_name_lists"
+        )
+
+        validate_list_refs(
+            database,
+            data["last_name_lists"],
+            "last_name",
+            name,
+            "last_name_lists"
+        )
